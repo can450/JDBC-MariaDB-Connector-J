@@ -4,6 +4,7 @@ public class AbstractClassMain {
     public static void main(String[] args) {
 
         //Abstract Factory example
+        //getFactory is a static method of FactoryProducer, so we don't need to initialize it.
         AbstractFactory shapeFactory = FactoryProducer.getFactory("SHAPE");
 
         if(shapeFactory instanceof AbstractFactory){
