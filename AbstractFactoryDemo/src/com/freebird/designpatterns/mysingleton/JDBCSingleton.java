@@ -16,7 +16,7 @@ class JDBCSingleton {
 
     //We need to provide a global point of access with the connector
 
-    public JDBCSingleton getJDBCConnector(){
+    public static JDBCSingleton getJDBCConnector(){
         if(myDBConntector==null){
             myDBConntector= new JDBCSingleton();
         }
