@@ -1,5 +1,6 @@
 package com.freebird.designpatterns.mysingleton;
 
+
 import java.sql.*;
 
 class JDBCSingleton {
@@ -23,13 +24,45 @@ class JDBCSingleton {
         return myDBConntector;
     }
 
+    public void passConnectionDetails(String URL, String loginuser, String loginpass) throws SQLException {
+        this.URL=URL;
+        this.loginuser=loginuser;
+        this.loginpass=loginpass;
+        System.out.println("testing connection");
+
+        Connection c=null;
+        PreparedStatement ps =null;
+        ResultSet rs=null;
+        try{
+            c=this.getConnection();
+            ps=c.prepareStatement("SELECT * FROM USERDATA");
+            rs=ps.executeQuery();
+            while(rs.next()){
+                System.out.println("Name="+rs.getString(2)+"\t"+"Password= "+rs.getString(3));
+            }
+
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+        }
+
+
+    }
+
     //this is a private method to get connections for operations like view insert etc.
     private static Connection getConnection() throws ClassNotFoundException, SQLException{
 
         Connection connection =null;
         //load a class during runtime
-        //Class.forName("com.mysql.jdbc.Driver");
-        connection= DriverManager.getConnection(URL, loginuser, loginpass);
+        Class.forName("org.mariadb.jdbc.Driver"); //otherwise java.sql.SQLException: No suitable driver found for localhost
+        connection= DriverManager.getConnection("jdbc:mariadb://"+URL+"/", loginuser, loginpass);
         return connection;
     }
 

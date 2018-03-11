@@ -56,45 +56,106 @@ public class JDBCSingletonDemo {
                         catch (Exception ex){
                             ex.printStackTrace();
                         }
+                        System.out.println("Press Enter key to continue...");
+                        System.in.read();
                     }
                     else {//ignore input, a connection needs to be made first
                     }
+                    break;
                 }
                 case 2:{
-                    if(connected){}
+                    if(connected){
+                        System.out.print("Who are you looking for?");
+                        String userName=br.readLine();
+
+                        try{
+                            jdbc.view(userName);
+                        }
+                        catch(Exception ex){
+                            ex.printStackTrace();
+                        }
+                        System.out.println("Press Enter key to continue...");
+                        System.in.read();
+                    }
                     else{//ignore input
 
                     }
+                    break;
                 }
                 case 3:{
-                    if(connected){}
+                    if(connected){
+                        System.out.print("Who do you want to wipe out?");
+                        int id = Integer.parseInt(br.readLine());
+                        try {
+                            int i = jdbc.delete(id);
+                            if (i>0) {
+                                System.out.println((count++) + " Data has been deleted successfully");
+                            }else{
+                                System.out.println("Data has not been deleted");
+                            }
+                        }
+                        catch (Exception ex){
+                            ex.printStackTrace();
+                        }
+                        System.out.println("Press Enter key to continue...");
+                        System.in.read();
+                    }
                     else{//ignore input
 
                     }
+                    break;
                 }
                 case 4:{
-                    if(connected){}
+                    if(connected){
+                        System.out.print("Whose password you want to update?");
+                        String username=br.readLine();
+                        System.out.print("Enter a new pass");
+                        String password=br.readLine();
+                        try{
+                            int i=jdbc.update(username, password);
+                            if(i>0){
+                                System.out.println((count++) + " Data has been updated successfully");
+                            }
+                        }catch(Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
                     else{//ignore input
 
                     }
+                    break;
                 }
                 case 5:{
-
+                    break;
                 }
                 case 6:{
                     if(connected){//ignore input
 
                     }
                     else{
-
+                        System.out.println("Enter the DB connection string here");
+                        System.out.println("URL first");
+                        String URL=br.readLine();
+                        System.out.println("Username now");
+                        String loginUser = br.readLine();
+                        System.out.println("Password now");
+                        String loginPass = br.readLine();
+                        try {
+                            jdbc.passConnectionDetails(URL, loginUser, loginPass);
+                        }catch(Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
+                    break;
                 }
+
+                default: return;
             }
 
 
 
         }
-        while(true);
+        while(choice!=5);
 
 
     }
