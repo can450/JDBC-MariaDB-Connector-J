@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class JDBCSingletonDemo {
 
-    static int count=1;
+
     static int choice;
 
     public static void main(String args[]) throws IOException {
@@ -48,16 +48,16 @@ public class JDBCSingletonDemo {
                         String password=br.readLine();
                         try {
                             int i = jdbc.insert(userName, password);
-                            if(i>0) System.out.println((count++) + " User inserted successfully");
+                            if(i>0) System.out.println(" - User inserted successfully");
                             else System.out.println("The user has not been inserted");
-                            System.out.println("Press Enter key to continue...");
-                            System.in.read();
+                            //System.out.println("Press Enter key to continue...");
+                            //System.in.read();
                         }
                         catch (Exception ex){
                             ex.printStackTrace();
                         }
-                        System.out.println("Press Enter key to continue...");
-                        System.in.read();
+                        //System.out.println("Press Enter key to continue...");
+                        //System.in.read();
                     }
                     else {//ignore input, a connection needs to be made first
                     }
@@ -74,8 +74,8 @@ public class JDBCSingletonDemo {
                         catch(Exception ex){
                             ex.printStackTrace();
                         }
-                        System.out.println("Press Enter key to continue...");
-                        System.in.read();
+                        //System.out.println("Press Enter key to continue...");
+                        //System.in.read();
                     }
                     else{//ignore input
 
@@ -89,7 +89,7 @@ public class JDBCSingletonDemo {
                         try {
                             int i = jdbc.delete(id);
                             if (i>0) {
-                                System.out.println((count++) + " Data has been deleted successfully");
+                                System.out.println(" - Data has been deleted successfully");
                             }else{
                                 System.out.println("Data has not been deleted");
                             }
@@ -97,8 +97,8 @@ public class JDBCSingletonDemo {
                         catch (Exception ex){
                             ex.printStackTrace();
                         }
-                        System.out.println("Press Enter key to continue...");
-                        System.in.read();
+                        //System.out.println("Press Enter key to continue...");
+                        //System.in.read();
                     }
                     else{//ignore input
 
@@ -114,7 +114,7 @@ public class JDBCSingletonDemo {
                         try{
                             int i=jdbc.update(username, password);
                             if(i>0){
-                                System.out.println((count++) + " Data has been updated successfully");
+                                System.out.println(" - Data has been updated successfully");
                             }
                         }catch(Exception ex){
                             ex.printStackTrace();
@@ -126,6 +126,11 @@ public class JDBCSingletonDemo {
                     break;
                 }
                 case 5:{
+                    try{
+                        jdbc.cleanup();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                     break;
                 }
                 case 6:{
@@ -140,8 +145,11 @@ public class JDBCSingletonDemo {
                         String loginUser = br.readLine();
                         System.out.println("Password now");
                         String loginPass = br.readLine();
+                        System.out.println("Enter an unused DB name for demo now");
+                        String dbName = br.readLine();
                         try {
-                            jdbc.passConnectionDetails(URL, loginUser, loginPass);
+                            jdbc.passConnectionDetails(URL, loginUser, loginPass, dbName);
+                            connected=true;
                         }catch(Exception ex){
                             ex.printStackTrace();
                         }
