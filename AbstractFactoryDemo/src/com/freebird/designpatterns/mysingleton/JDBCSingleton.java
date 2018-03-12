@@ -1,6 +1,7 @@
 package com.freebird.designpatterns.mysingleton;
 
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 class JDBCSingleton {
@@ -9,7 +10,7 @@ class JDBCSingleton {
     private static JDBCSingleton myDBConntector;
 
     //I define connection string parameters as static
-    private static String URL, loginuser, loginpass;
+    private static String URL, loginuser, loginpass, dbName;
 
 
     //we need to make the constructor private in order to prevent this being created from outside
@@ -24,17 +25,40 @@ class JDBCSingleton {
         return myDBConntector;
     }
 
-    public void passConnectionDetails(String URL, String loginuser, String loginpass) throws SQLException {
+    public void passConnectionDetails(String URL, String loginuser, String loginpass, String dbName) throws SQLException, ClassNotFoundException {
         this.URL=URL;
         this.loginuser=loginuser;
         this.loginpass=loginpass;
+        this.dbName=dbName;
         System.out.println("testing connection");
 
-        Connection c=null;
+
+        Class.forName("org.mariadb.jdbc.Driver");
+        Connection c=DriverManager.getConnection("jdbc:mariadb://"+URL, loginuser, loginpass);
+
         PreparedStatement ps =null;
         ResultSet rs=null;
+        Statement createDBStatement=null;
+
         try{
-            c=this.getConnection();
+
+            createDBStatement=c.createStatement();
+            String createSQL="CREATE DATABASE IF NOT EXISTS "+dbName;
+
+            createDBStatement.executeUpdate(createSQL);
+            System.out.println("DEBUG: Database created successfully...");
+            createSQL="USE "+dbName;
+            createDBStatement.executeUpdate(createSQL);
+
+
+            String createTableSQL="CREATE TABLE IF NOT EXISTS USERDATA "+
+                    "(uid INTEGER not NULL AUTO_INCREMENT, "+
+                    " USERNAME VARCHAR(255), "+
+                    " PASSWORD VARCHAR(255), " +
+                    " PRIMARY KEY (uid))";
+
+            createDBStatement.executeUpdate(createTableSQL);
+
             ps=c.prepareStatement("SELECT * FROM USERDATA");
             rs=ps.executeQuery();
             while(rs.next()){
@@ -51,6 +75,9 @@ class JDBCSingleton {
             if (ps != null) {
                 ps.close();
             }
+            if(createDBStatement!=null){
+                createDBStatement.close();
+            }
         }
 
 
@@ -62,7 +89,7 @@ class JDBCSingleton {
         Connection connection =null;
         //load a class during runtime
         Class.forName("org.mariadb.jdbc.Driver"); //otherwise java.sql.SQLException: No suitable driver found for localhost
-        connection= DriverManager.getConnection("jdbc:mariadb://"+URL+"/", loginuser, loginpass);
+        connection= DriverManager.getConnection("jdbc:mariadb://"+URL+"/"+dbName, loginuser, loginpass);
         return connection;
     }
 
@@ -160,7 +187,38 @@ class JDBCSingleton {
         }
         return recordCounter;
 
-    }//End of JDBCSingleton class
+    }
+
+    //to cleanup everything upon exit
+    public void cleanup() throws SQLException {
+
+        String dropSQL=null;
+        Statement dropStatement=null;
+        Connection c=null;
+
+        try{
+            c=this.getConnection();
+            dropStatement=c.createStatement();
+            dropSQL="DROP TABLE IF EXISTS USERDATA";
+            dropStatement.executeUpdate(dropSQL);
+            dropSQL="DROP DATABASE IF EXISTS "+dbName;
+            dropStatement.executeUpdate(dropSQL);
+
+
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }finally{
+            if (dropStatement!=null){
+                dropStatement.close();
+            }
+            if(c!=null){
+                c.close();
+            }
+        }
+
+
+
+    }
 
 
 
@@ -170,5 +228,4 @@ class JDBCSingleton {
 
 
 
-
-}
+}//End of JDBCSingleton class
