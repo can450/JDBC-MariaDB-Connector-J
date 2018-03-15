@@ -1,7 +1,6 @@
 package com.freebird.designpatterns.mysingleton;
 
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 class JDBCSingleton {
